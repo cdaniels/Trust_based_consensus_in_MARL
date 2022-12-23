@@ -23,6 +23,8 @@ class Simulation:
         Args:
             env (Environment): the environment in which learning is taking place
         """
+        # clear old learners
+        self.learner_dict = dict()
         # initialize agents for environment
         for agent_i in env.agents:
             actions = env.get_actions_for_agent(agent_i)
