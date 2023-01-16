@@ -152,9 +152,9 @@ class Test_Environment(unittest.TestCase):
             self.env.set_proposed_value_for_agent(n, proposed_val+1)
         self.assertFalse(self.env.local_consensus_reached(agent))
 
-    def test_global_consensus_reached_when_all_agents_agree(self):
+    def test_global_consensus_reached_when_all_agents_agree_on_1(self):
         # set all agents to have the same value
-        proposed_val = np.random.choice(self.env.candidate_values)
+        proposed_val = 1.0 #np.random.choice(self.env.candidate_values)
         for n in self.agents:
             self.env.set_proposed_value_for_agent(n, proposed_val)
         self.assertTrue(self.env.global_consensus_reached())

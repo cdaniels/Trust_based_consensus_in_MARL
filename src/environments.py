@@ -36,7 +36,8 @@ class NetworkConsensusEnv:
     def reset(self):
         """Resut all communication, trust, and proposed value information for all agents
         """
-        self.proposed_values = np.random.choice(self.candidate_values, self.num_agents) # random inital guesses for value by each agent
+        #self.proposed_values = np.random.choice(self.candidate_values, self.num_agents) # random inital guesses for value by each agent
+        self.proposed_values = np.ones(self.num_agents) # random inital guesses for value by each agent
         # tables representing incomming broadcasts between agents and trust between agents
         self.incomming_messages = np.ones((self.num_agents, self.num_agents)) * -1
         self.trust_matrix = np.ones((self.num_agents, self.num_agents))
@@ -103,12 +104,16 @@ class NetworkConsensusEnv:
         Returns:
             bool: whether or not a local consensus was reached for that agent
         """
-        nei_i = self.get_agent_neighbors(agent_i)
         agent_val = self.get_proposed_value_for_agent(agent_i)
+        nei_i = self.get_agent_neighbors(agent_i)
         for n in nei_i:
             neighbor_val = self.get_proposed_value_for_agent(n)
             if n not in self.unreliable_agents and neighbor_val != agent_val:
                 return False
+        # buffer_i = self.receive_incomming_messages_into_buffer(agent_i)
+        # for val in buffer_i:
+        #     if val != agent_val:
+        #         return False
         return True
 
     def global_consensus_reached(self):
@@ -118,6 +123,9 @@ class NetworkConsensusEnv:
         Returns:
             bool: whether or not a global consensus was reached for all agents
         """
+        # for a in self.reliable_agents:
+        #     val = self.get_proposed_value_for_agent(a)
+        #     if val != 1: return False
         for a in self.agents:
             agent_val = self.get_proposed_value_for_agent(a)
             for b in self.agents:
@@ -205,7 +213,8 @@ class NetworkConsensusEnv:
         # get current value v_i
         v_i = self.proposed_values[agent_i]
         # update current value by randomly selecting from {v_i} union buffer_i
-        next_v_i = np.random.choice(np.union1d([v_i], buffer_i))
+        possible_vals = np.append(buffer_i, v_i)
+        next_v_i = np.random.choice(possible_vals)
         self.proposed_values[agent_i] = next_v_i
  
     def unpack_options(self, options):

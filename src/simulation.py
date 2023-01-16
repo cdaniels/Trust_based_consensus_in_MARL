@@ -3,6 +3,8 @@ import numpy as np
 from src.environments import NetworkConsensusEnv, default_env_options
 from src.q_learning import QLearning, default_agent_options
 
+from display import Display
+
 default_sim_options = {
     'num_episodes': 10,
     'num_runs': 2
@@ -12,6 +14,7 @@ class Simulation:
         self.unpack_options(options)
         self.agent_options = agent_options
         self.env = env
+        self.display = Display()
         # dictionary for holding agent classes
         self.learner_dict = dict()
         self.per_episode_data = np.zeros((self.num_runs, 2, self.num_episodes))
@@ -103,16 +106,22 @@ class Simulation:
         terminated = False
         reward_sum, step_count = 0, 0
         while not terminated:
+
+            #if step_count in [10**n for n in range(0,10)]:
+                #self.display.visit(self.env)
+                # print(step_count)
+                # print(self.env.trust_matrix)
+
             # broadcast values to neighbors
             for agent_i in agents:
                 self.env.broadcast_agent_value(agent_i)
 
             # receive broadcast values in buffer and update local value from buffer
-            for agent_i in agents:
+            for agent_i in self.env.reliable_agents:
                 self.env.receive_incomming_broadcasts(agent_i)
 
             # perform steps with each agent and learn if appropriate
-            for agent_i in agents:
+            for agent_i in self.env.reliable_agents:
                 learner = self.learner_dict[agent_i]
 
                 # take step
