@@ -8,7 +8,8 @@ from enum import Enum
 default_env_options = {
     # 2 means 4 agents total ,3 means 9 agents total, etc...
     'sqrt_num_agents': 3,
-    'num_unreliable_agents': 4
+    'num_unreliable_agents': 4,
+    'fixed_noise': 0
 }
 class NetworkConsensusEnv:
 
@@ -36,8 +37,12 @@ class NetworkConsensusEnv:
     def reset(self):
         """Resut all communication, trust, and proposed value information for all agents
         """
-        #self.proposed_values = np.random.choice(self.candidate_values, self.num_agents) # random inital guesses for value by each agent
-        self.proposed_values = np.ones(self.num_agents) # random inital guesses for value by each agent
+        # probability for choice to be 1 or 0
+        if self.fixed_noise == 0:
+            self.proposed_values = np.ones(self.num_agents)
+        else:
+            prob_one = 1 - self.fixed_noise
+            self.proposed_values = np.random.choice(self.candidate_values, self.num_agents, p=[1-prob_one, prob_one]) # random inital guesses for value by each agent
         # tables representing incomming broadcasts between agents and trust between agents
         self.incomming_messages = np.ones((self.num_agents, self.num_agents)) * -1
         self.trust_matrix = np.ones((self.num_agents, self.num_agents))

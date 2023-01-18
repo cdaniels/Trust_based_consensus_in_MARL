@@ -2,6 +2,7 @@ import numpy as np
 
 from src.environments import NetworkConsensusEnv, default_env_options
 from src.q_learning import QLearning, default_agent_options
+from src.double_q_learning import DoubleQLearning
 
 from display import Display
 
@@ -10,7 +11,7 @@ default_sim_options = {
     'num_runs': 2
 }
 class Simulation:
-    def __init__(self, options=default_sim_options, agent_options=default_agent_options, env=NetworkConsensusEnv(default_env_options)) -> None:
+    def __init__(self, options=default_sim_options, agent_options=default_agent_options, env=NetworkConsensusEnv(default_env_options), agent_class=DoubleQLearning) -> None:
         self.unpack_options(options)
         self.agent_options = agent_options
         self.env = env
@@ -32,7 +33,7 @@ class Simulation:
         for agent_i in env.agents:
             actions = env.get_actions_for_agent(agent_i)
             states = env.get_states_for_agent(agent_i)
-            learner = QLearning(self.agent_options, actions=actions, states=states)
+            learner = DoubleQLearning(self.agent_options, actions=actions, states=states)
             self.learner_dict[agent_i] = learner
 
     def initialize_agent_actions(self, agents):
